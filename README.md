@@ -53,3 +53,4 @@ A comprehensive React application for managing Airbnb properties with detailed t
 - [Lucide React](https://lucide.dev/) - Icons
 - [React Router](https://reactrouter.com/) - Routing
 - [date-fns](https://date-fns.org/) - Date utilities
+# StaySync-Tempo2
