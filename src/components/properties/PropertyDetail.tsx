@@ -15,6 +15,14 @@ import {
 } from "lucide-react";
 import RoomGrid from "../inventory/RoomGrid";
 import InventoryItemList from "../inventory/InventoryItemList";
+import PropertyCard from "./PropertyCard";
+import InventoryCard from "../inventory/InventoryCard";
+
+// Import the ROOMS_BY_PROPERTY and INVENTORY_ITEMS from InventoryItemList
+import {
+  ROOMS_BY_PROPERTY,
+  INVENTORY_ITEMS,
+} from "../inventory/InventoryItemList";
 
 const PROPERTIES = [
   {
@@ -315,21 +323,77 @@ function PropertyDetail() {
 
         <TabsContent value="inventory" className="mt-4">
           <div className="space-y-6">
-            <RoomGrid
-              propertyId={property.id}
-              selectedRoom={selectedRoom}
-              onSelectRoom={setSelectedRoom}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-1">
+                <PropertyCard
+                  id={property.id}
+                  name={property.name}
+                  location={property.location}
+                  bedrooms={property.bedrooms}
+                  bathrooms={property.bathrooms}
+                  maxGuests={property.maxGuests}
+                  image={property.image}
+                  amenities={property.amenities.slice(0, 5)}
+                />
+              </div>
+              <div className="md:col-span-2">
+                <RoomGrid
+                  propertyId={property.id}
+                  selectedRoom={selectedRoom}
+                  onSelectRoom={setSelectedRoom}
+                />
+              </div>
+            </div>
 
             {selectedRoom && (
               <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-4">
                   Items in Selected Room
                 </h2>
-                <InventoryItemList
-                  propertyId={property.id}
-                  roomId={selectedRoom}
-                />
+                {/* Get the room name from the ROOMS_BY_PROPERTY data */}
+                {(() => {
+                  const rooms =
+                    ROOMS_BY_PROPERTY[
+                      property.id as keyof typeof ROOMS_BY_PROPERTY
+                    ] || [];
+                  const roomName =
+                    rooms.find((r) => r.id === selectedRoom)?.name ||
+                    "Selected Room";
+
+                  // Convert the inventory items to the format expected by InventoryCard
+                  const inventoryItems = INVENTORY_ITEMS.filter(
+                    (item) =>
+                      item.propertyId === property.id &&
+                      item.roomId === selectedRoom,
+                  ).map((item) => ({
+                    id: item.id,
+                    name: item.name,
+                    category: item.category,
+                    condition: item.condition,
+                    notes: item.notes,
+                  }));
+
+                  return (
+                    <InventoryCard
+                      roomName={roomName}
+                      items={inventoryItems}
+                      onEditItem={(itemId) =>
+                        console.log(`Edit item ${itemId}`)
+                      }
+                    />
+                  );
+                })()}
+
+                {/* Keep the original list view as an alternative */}
+                <div className="mt-6">
+                  <h3 className="text-lg font-medium mb-4">
+                    Detailed Inventory List
+                  </h3>
+                  <InventoryItemList
+                    propertyId={property.id}
+                    roomId={selectedRoom}
+                  />
+                </div>
               </div>
             )}
           </div>

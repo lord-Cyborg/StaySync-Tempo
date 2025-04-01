@@ -19,6 +19,7 @@ import {
 import { format } from "date-fns";
 import { Edit, Eye, Search, Trash2 } from "lucide-react";
 
+// Define room data by property
 const ROOMS_BY_PROPERTY = {
   "1": [
     // Ocean View Villa
@@ -51,6 +52,7 @@ const ROOMS_BY_PROPERTY = {
   ],
 };
 
+// Define inventory items data
 const INVENTORY_ITEMS = [
   {
     id: "1",
@@ -405,3 +407,6 @@ function InventoryItemList({ propertyId, roomId }: InventoryItemListProps) {
 }
 
 export default InventoryItemList;
+
+// Export constants separately from the component
+export { ROOMS_BY_PROPERTY, INVENTORY_ITEMS };

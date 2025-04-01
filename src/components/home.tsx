@@ -6,228 +6,630 @@ import {
   DollarSign,
   Package,
   TrendingUp,
+  Building,
+  ArrowRight,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  Star,
+  MoreHorizontal,
+  Calendar,
+  Sparkles,
 } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function Home() {
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
   return (
-    <div className="p-4 sm:p-6 md:p-8 space-y-6 bg-background w-full h-full overflow-auto">
+    <div className="space-y-8 bg-background w-full h-full">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
-          StaySync Dashboard
-        </h1>
-        <p className="text-sm sm:text-base text-muted-foreground">
-          Welcome back! Here's an overview of your properties.
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Dashboard
+            </h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
+              Welcome back! Here's your property overview for {currentDate}.
+            </p>
+          </div>
+          <Button className="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary/90">
+            <Sparkles className="h-4 w-4" />
+            <span>Quick Actions</span>
+          </Button>
+        </div>
       </div>
 
-      {/* Stats Cards - Horizontal scrollable on mobile */}
-      <div className="-mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex overflow-x-auto pb-4 sm:pb-0 sm:grid sm:gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3 no-scrollbar">
-          <Card className="flex-shrink-0 w-[180px] sm:w-full mr-3 sm:mr-0 overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow dark:bg-gray-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative p-3 sm:p-6">
-              <CardTitle className="text-sm font-medium">Bookings</CardTitle>
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center dark:bg-blue-900">
-                <CalendarDays className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-              </div>
-            </CardHeader>
-            <CardContent className="relative p-3 pt-0 sm:p-6 sm:pt-0">
-              <div className="text-2xl sm:text-3xl font-bold">12</div>
-              <div className="flex items-center mt-1">
-                <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
-                <p className="text-xs text-green-500 font-medium">+8%</p>
-                <p className="text-xs text-muted-foreground ml-2">
-                  Active bookings
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="flex-shrink-0 w-[180px] sm:w-full mr-3 sm:mr-0 overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow dark:bg-gray-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative p-3 sm:p-6">
-              <CardTitle className="text-sm font-medium">Tasks</CardTitle>
-              <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center dark:bg-amber-900">
-                <ClipboardList className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-              </div>
-            </CardHeader>
-            <CardContent className="relative p-3 pt-0 sm:p-6 sm:pt-0">
-              <div className="text-2xl sm:text-3xl font-bold">8</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Pending tasks
+      {/* Stats Cards - Responsive grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+        <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-5">
+            <CardTitle className="text-sm font-medium">Bookings</CardTitle>
+            <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
+              <CalendarDays className="h-5 w-5 text-primary" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-5 pt-0">
+            <div className="text-2xl font-bold">12</div>
+            <div className="flex items-center mt-1">
+              <TrendingUp className="h-3 w-3 text-emerald-500 mr-1" />
+              <p className="text-xs text-emerald-500 font-medium">+8%</p>
+              <p className="text-xs text-muted-foreground ml-2">
+                from last month
               </p>
-            </CardContent>
-          </Card>
+            </div>
+            <Progress className="h-1 mt-4" value={75} />
+          </CardContent>
+        </Card>
 
-          <Card className="flex-shrink-0 w-[180px] sm:w-full mr-3 sm:mr-0 overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow dark:bg-gray-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative p-3 sm:p-6">
-              <CardTitle className="text-sm font-medium">Team</CardTitle>
-              <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center dark:bg-purple-900">
-                <Users className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-              </div>
-            </CardHeader>
-            <CardContent className="relative p-3 pt-0 sm:p-6 sm:pt-0">
-              <div className="text-2xl sm:text-3xl font-bold">5</div>
-              <p className="text-xs text-muted-foreground mt-1">Team members</p>
-            </CardContent>
-          </Card>
+        <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-5">
+            <CardTitle className="text-sm font-medium">Tasks</CardTitle>
+            <div className="h-9 w-9 rounded-full bg-amber-500/10 flex items-center justify-center">
+              <ClipboardList className="h-5 w-5 text-amber-500" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-5 pt-0">
+            <div className="text-2xl font-bold">8</div>
+            <div className="flex items-center mt-1">
+              <p className="text-xs text-muted-foreground">
+                <span className="text-amber-500 font-medium">
+                  3 high priority
+                </span>{" "}
+                tasks pending
+              </p>
+            </div>
+            <Progress className="h-1 mt-4" value={40} />
+          </CardContent>
+        </Card>
 
-          <Card className="flex-shrink-0 w-[180px] sm:w-full mr-3 sm:mr-0 overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow dark:bg-gray-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative p-3 sm:p-6">
-              <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-              <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center dark:bg-green-900">
-                <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
-              </div>
-            </CardHeader>
-            <CardContent className="relative p-3 pt-0 sm:p-6 sm:pt-0">
-              <div className="text-2xl sm:text-3xl font-bold">$12,450</div>
-              <div className="flex items-center mt-1">
-                <TrendingUp className="h-3 w-3 text-green-500 mr-1" />
-                <p className="text-xs text-green-500 font-medium">+12%</p>
-                <p className="text-xs text-muted-foreground ml-2">Monthly</p>
-              </div>
-            </CardContent>
-          </Card>
+        <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-5">
+            <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+            <div className="h-9 w-9 rounded-full bg-emerald-500/10 flex items-center justify-center">
+              <DollarSign className="h-5 w-5 text-emerald-500" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-5 pt-0">
+            <div className="text-2xl font-bold">$12,450</div>
+            <div className="flex items-center mt-1">
+              <TrendingUp className="h-3 w-3 text-emerald-500 mr-1" />
+              <p className="text-xs text-emerald-500 font-medium">+12%</p>
+              <p className="text-xs text-muted-foreground ml-2">
+                from last month
+              </p>
+            </div>
+            <Progress className="h-1 mt-4" value={85} />
+          </CardContent>
+        </Card>
 
-          <Card className="flex-shrink-0 w-[180px] sm:w-full mr-3 sm:mr-0 overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow dark:bg-gray-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative p-3 sm:p-6">
-              <CardTitle className="text-sm font-medium">Inventory</CardTitle>
-              <div className="h-8 w-8 rounded-full bg-cyan-100 flex items-center justify-center dark:bg-cyan-900">
-                <Package className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
-              </div>
-            </CardHeader>
-            <CardContent className="relative p-3 pt-0 sm:p-6 sm:pt-0">
-              <div className="text-2xl sm:text-3xl font-bold">324</div>
-              <p className="text-xs text-muted-foreground mt-1">Items</p>
-            </CardContent>
-          </Card>
-
-          <Card className="flex-shrink-0 w-[180px] sm:w-full mr-3 sm:mr-0 overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow dark:bg-gray-800">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative p-3 sm:p-6">
-              <CardTitle className="text-sm font-medium">Properties</CardTitle>
-              <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center dark:bg-indigo-900">
-                <HomeIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-              </div>
-            </CardHeader>
-            <CardContent className="relative p-3 pt-0 sm:p-6 sm:pt-0">
-              <div className="text-2xl sm:text-3xl font-bold">3</div>
-              <p className="text-xs text-muted-foreground mt-1">Active</p>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-5">
+            <CardTitle className="text-sm font-medium">Properties</CardTitle>
+            <div className="h-9 w-9 rounded-full bg-indigo-500/10 flex items-center justify-center">
+              <Building className="h-5 w-5 text-indigo-500" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-5 pt-0">
+            <div className="text-2xl font-bold">3</div>
+            <div className="flex items-center mt-1">
+              <p className="text-xs text-muted-foreground">
+                <span className="text-indigo-500 font-medium">100%</span>{" "}
+                occupancy rate
+              </p>
+            </div>
+            <Progress className="h-1 mt-4" value={100} />
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Tabs for mobile view */}
-      <div className="sm:hidden">
-        <div className="flex border-b border-border mb-4">
-          <button className="px-4 py-2 text-sm font-medium border-b-2 border-primary text-primary">
+      {/* Tabs for all views */}
+      <Tabs defaultValue="bookings" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 sm:w-auto">
+          <TabsTrigger value="bookings" className="text-sm">
             Bookings
-          </button>
-          <button className="px-4 py-2 text-sm font-medium text-muted-foreground">
+          </TabsTrigger>
+          <TabsTrigger value="tasks" className="text-sm">
             Tasks
-          </button>
-        </div>
-      </div>
+          </TabsTrigger>
+          <TabsTrigger value="team" className="text-sm">
+            Team
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Detailed Cards */}
-      <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
-        <Card className="border-none shadow-lg dark:bg-gray-800">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg">
-              Upcoming Bookings
-            </CardTitle>
-            <CardDescription>Next 7 days</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-            <div className="space-y-3 sm:space-y-4">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 rounded-lg bg-blue-50 dark:bg-blue-900/30">
-                <div>
-                  <p className="font-medium">Ocean View Villa</p>
-                  <p className="text-sm text-muted-foreground">
-                    John Smith • 4 guests
-                  </p>
-                </div>
-                <div className="text-sm font-medium px-3 py-1 mt-2 sm:mt-0 inline-block sm:inline rounded-full bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-300">
-                  May 15 - May 20
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 rounded-lg bg-purple-50 dark:bg-purple-900/30">
-                <div>
-                  <p className="font-medium">Mountain Retreat</p>
-                  <p className="text-sm text-muted-foreground">
-                    Sarah Johnson • 2 guests
-                  </p>
-                </div>
-                <div className="text-sm font-medium px-3 py-1 mt-2 sm:mt-0 inline-block sm:inline rounded-full bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-300">
-                  May 18 - May 25
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 rounded-lg bg-cyan-50 dark:bg-cyan-900/30">
-                <div>
-                  <p className="font-medium">Downtown Loft</p>
-                  <p className="text-sm text-muted-foreground">
-                    Michael Brown • 3 guests
-                  </p>
-                </div>
-                <div className="text-sm font-medium px-3 py-1 mt-2 sm:mt-0 inline-block sm:inline rounded-full bg-cyan-100 text-cyan-700 dark:bg-cyan-800 dark:text-cyan-300">
-                  May 22 - May 24
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <TabsContent value="bookings" className="mt-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium">Upcoming Bookings</h3>
+            <Button variant="outline" size="sm" className="text-xs h-8 gap-1">
+              <Calendar className="h-3.5 w-3.5" />
+              <span>View Calendar</span>
+            </Button>
+          </div>
 
-        <Card className="border-none shadow-lg dark:bg-gray-800">
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg">
-              Pending Tasks
-            </CardTitle>
-            <CardDescription>High priority</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-            <div className="space-y-3 sm:space-y-4">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 rounded-lg bg-red-50 dark:bg-red-900/30">
-                <div>
-                  <p className="font-medium">Replace AC filter</p>
-                  <p className="text-sm text-muted-foreground">
-                    Ocean View Villa • Maintenance
-                  </p>
+          <div className="space-y-3">
+            <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+              <CardContent className="p-0">
+                <div className="flex items-center border-l-4 border-primary p-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant="outline"
+                        className="bg-primary/5 text-primary border-primary/20 rounded-md"
+                      >
+                        Today
+                      </Badge>
+                      <h4 className="font-medium">Ocean View Villa</h4>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage
+                          src="https://api.dicebear.com/7.x/avataaars/svg?seed=John"
+                          alt="John Smith"
+                        />
+                        <AvatarFallback>JS</AvatarFallback>
+                      </Avatar>
+                      <p className="text-sm text-muted-foreground">
+                        John Smith • 4 guests • 5 nights
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-none">
+                      May 15 - May 20
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Edit Booking</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive">
+                          Cancel Booking
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-                <div className="text-sm font-medium px-3 py-1 mt-2 sm:mt-0 inline-block sm:inline rounded-full bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300">
-                  Due today
+              </CardContent>
+            </Card>
+
+            <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+              <CardContent className="p-0">
+                <div className="flex items-center border-l-4 border-purple-500 p-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant="outline"
+                        className="bg-purple-500/5 text-purple-500 border-purple-500/20 rounded-md"
+                      >
+                        In 3 days
+                      </Badge>
+                      <h4 className="font-medium">Mountain Retreat</h4>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage
+                          src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah"
+                          alt="Sarah Johnson"
+                        />
+                        <AvatarFallback>SJ</AvatarFallback>
+                      </Avatar>
+                      <p className="text-sm text-muted-foreground">
+                        Sarah Johnson • 2 guests • 7 nights
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 border-none">
+                      May 18 - May 25
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Edit Booking</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive">
+                          Cancel Booking
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30">
-                <div>
-                  <p className="font-medium">Deep cleaning</p>
-                  <p className="text-sm text-muted-foreground">
-                    Mountain Retreat • Cleaning
-                  </p>
+              </CardContent>
+            </Card>
+
+            <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+              <CardContent className="p-0">
+                <div className="flex items-center border-l-4 border-cyan-500 p-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant="outline"
+                        className="bg-cyan-500/5 text-cyan-500 border-cyan-500/20 rounded-md"
+                      >
+                        In 7 days
+                      </Badge>
+                      <h4 className="font-medium">Downtown Loft</h4>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage
+                          src="https://api.dicebear.com/7.x/avataaars/svg?seed=Michael"
+                          alt="Michael Brown"
+                        />
+                        <AvatarFallback>MB</AvatarFallback>
+                      </Avatar>
+                      <p className="text-sm text-muted-foreground">
+                        Michael Brown • 3 guests • 2 nights
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-cyan-500/10 text-cyan-500 hover:bg-cyan-500/20 border-none">
+                      May 22 - May 24
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Edit Booking</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive">
+                          Cancel Booking
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-                <div className="text-sm font-medium px-3 py-1 mt-2 sm:mt-0 inline-block sm:inline rounded-full bg-amber-100 text-amber-700 dark:bg-amber-800 dark:text-amber-300">
-                  Due tomorrow
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <Button variant="outline" size="sm" className="text-xs gap-1">
+              <span>View All Bookings</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="tasks" className="mt-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium">Pending Tasks</h3>
+            <Button variant="outline" size="sm" className="text-xs h-8 gap-1">
+              <ClipboardList className="h-3.5 w-3.5" />
+              <span>View All Tasks</span>
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+              <CardContent className="p-0">
+                <div className="flex items-center border-l-4 border-red-500 p-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant="outline"
+                        className="bg-red-500/5 text-red-500 border-red-500/20 rounded-md"
+                      >
+                        High Priority
+                      </Badge>
+                      <h4 className="font-medium">Replace AC filter</h4>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <AlertCircle className="h-4 w-4 text-red-500" />
+                      <p className="text-sm text-muted-foreground">
+                        Ocean View Villa • Maintenance
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-red-500/10 text-red-500 hover:bg-red-500/20 border-none">
+                      Due today
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
+                        <DropdownMenuItem>Reassign Task</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 rounded-lg bg-green-50 dark:bg-green-900/30">
-                <div>
-                  <p className="font-medium">Restock supplies</p>
-                  <p className="text-sm text-muted-foreground">
-                    Downtown Loft • Inventory
-                  </p>
+              </CardContent>
+            </Card>
+
+            <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+              <CardContent className="p-0">
+                <div className="flex items-center border-l-4 border-amber-500 p-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant="outline"
+                        className="bg-amber-500/5 text-amber-500 border-amber-500/20 rounded-md"
+                      >
+                        Medium Priority
+                      </Badge>
+                      <h4 className="font-medium">Deep cleaning</h4>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Clock className="h-4 w-4 text-amber-500" />
+                      <p className="text-sm text-muted-foreground">
+                        Mountain Retreat • Cleaning
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-none">
+                      Due tomorrow
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
+                        <DropdownMenuItem>Reassign Task</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-                <div className="text-sm font-medium px-3 py-1 mt-2 sm:mt-0 inline-block sm:inline rounded-full bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-300">
-                  Due in 3 days
+              </CardContent>
+            </Card>
+
+            <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+              <CardContent className="p-0">
+                <div className="flex items-center border-l-4 border-emerald-500 p-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Badge
+                        variant="outline"
+                        className="bg-emerald-500/5 text-emerald-500 border-emerald-500/20 rounded-md"
+                      >
+                        Low Priority
+                      </Badge>
+                      <h4 className="font-medium">Restock supplies</h4>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                      <p className="text-sm text-muted-foreground">
+                        Downtown Loft • Inventory
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-none">
+                      Due in 3 days
+                    </Badge>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-full"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
+                        <DropdownMenuItem>Reassign Task</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <Button variant="outline" size="sm" className="text-xs gap-1">
+              <span>View All Tasks</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="team" className="mt-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-medium">Team Members</h3>
+            <Button variant="outline" size="sm" className="text-xs h-8 gap-1">
+              <Users className="h-3.5 w-3.5" />
+              <span>Manage Team</span>
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-12 w-12 border-2 border-primary/20">
+                    <AvatarImage
+                      src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
+                      alt="Alex Johnson"
+                    />
+                    <AvatarFallback>AJ</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h4 className="font-medium">Alex Johnson</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Cleaning Manager
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                  </div>
+                  <Badge className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-none">
+                    Available
+                  </Badge>
+                </div>
+              </CardContent>
+              <CardFooter className="p-0 border-t border-border/40">
+                <Button
+                  variant="ghost"
+                  className="w-full rounded-none h-10 text-xs"
+                >
+                  View Schedule
+                </Button>
+              </CardFooter>
+            </Card>
+
+            <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-12 w-12 border-2 border-primary/20">
+                    <AvatarImage
+                      src="https://api.dicebear.com/7.x/avataaars/svg?seed=Maria"
+                      alt="Maria Garcia"
+                    />
+                    <AvatarFallback>MG</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h4 className="font-medium">Maria Garcia</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Maintenance Lead
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-muted-foreground/20" />
+                  </div>
+                  <Badge className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border-none">
+                    On Task
+                  </Badge>
+                </div>
+              </CardContent>
+              <CardFooter className="p-0 border-t border-border/40">
+                <Button
+                  variant="ghost"
+                  className="w-full rounded-none h-10 text-xs"
+                >
+                  View Schedule
+                </Button>
+              </CardFooter>
+            </Card>
+
+            <Card className="overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all dark:bg-gray-800/50">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-12 w-12 border-2 border-primary/20">
+                    <AvatarImage
+                      src="https://api.dicebear.com/7.x/avataaars/svg?seed=David"
+                      alt="David Kim"
+                    />
+                    <AvatarFallback>DK</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h4 className="font-medium">David Kim</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Property Inspector
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                    <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                  </div>
+                  <Badge className="bg-red-500/10 text-red-500 hover:bg-red-500/20 border-none">
+                    Off Duty
+                  </Badge>
+                </div>
+              </CardContent>
+              <CardFooter className="p-0 border-t border-border/40">
+                <Button
+                  variant="ghost"
+                  className="w-full rounded-none h-10 text-xs"
+                >
+                  View Schedule
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+
+          <div className="flex justify-center mt-4">
+            <Button variant="outline" size="sm" className="text-xs gap-1">
+              <span>View All Team Members</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
