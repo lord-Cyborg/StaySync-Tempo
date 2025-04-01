@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import LanguageSelector from "./LanguageSelector";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -134,6 +135,23 @@ function MainLayout({ children }: MainLayoutProps) {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Toggle theme</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <LanguageSelector
+                      onLanguageChange={(lang) =>
+                        console.log(`Language changed to: ${lang}`)
+                      }
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Change language</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
