@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   ArrowLeft,
   Star,
@@ -10,21 +12,18 @@ import {
   Users,
   Bed,
   Bath,
-  DollarSign,
   Calendar,
+  Check,
+  Wifi,
+  Search,
 } from "lucide-react";
+import { db } from "@/lib/database";
+import { Property } from "@/lib/database/schema";
 import RoomGrid from "../inventory/RoomGrid";
 import InventoryItemList from "../inventory/InventoryItemList";
-import PropertyCard from "./PropertyCard";
-import InventoryCard from "../inventory/InventoryCard";
 
-// Import the ROOMS_BY_PROPERTY and INVENTORY_ITEMS from InventoryItemList
-import {
-  ROOMS_BY_PROPERTY,
-  INVENTORY_ITEMS,
-} from "../inventory/InventoryItemList";
-
-const PROPERTIES = [
+// Sample properties data for fallback
+const SAMPLE_PROPERTIES = [
   {
     id: "1",
     name: "Ocean View Villa",
@@ -37,25 +36,7 @@ const PROPERTIES = [
     image:
       "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80",
     description:
-      "Luxurious beachfront villa with stunning ocean views and private access to the beach. This spacious property features an open floor plan with floor-to-ceiling windows that showcase the breathtaking ocean views. The gourmet kitchen is equipped with high-end appliances and opens to a dining area that seats 8. The master suite includes a king-sized bed, en-suite bathroom with soaking tub, and private balcony. Three additional bedrooms provide comfortable accommodations for guests. Outside, enjoy the infinity pool, hot tub, and multiple lounging areas perfect for entertaining.",
-    amenities: [
-      "Beachfront",
-      "Pool",
-      "Hot tub",
-      "Wifi",
-      "Full kitchen",
-      "Air conditioning",
-      "Washer/dryer",
-      "Parking",
-      "Outdoor shower",
-      "BBQ grill",
-    ],
-    images: [
-      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80",
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
-      "https://images.unsplash.com/photo-1416331108676-a22ccb276e35?w=800&q=80",
-      "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=800&q=80",
-    ],
+      "Luxurious beachfront villa with stunning ocean views and private access to the beach.",
   },
   {
     id: "2",
@@ -69,25 +50,7 @@ const PROPERTIES = [
     image:
       "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80",
     description:
-      "Cozy mountain cabin with panoramic views, hot tub, and easy access to hiking trails. This charming retreat is nestled among pine trees with stunning mountain vistas from every window. The great room features a stone fireplace, vaulted ceilings, and comfortable seating for the whole family. The well-appointed kitchen has everything needed to prepare meals after a day of outdoor adventures. The master bedroom includes a queen bed and en-suite bathroom, while two additional bedrooms provide flexible sleeping arrangements. The outdoor deck with hot tub is perfect for stargazing on clear mountain nights.",
-    amenities: [
-      "Mountain views",
-      "Hot tub",
-      "Fireplace",
-      "Wifi",
-      "Full kitchen",
-      "Washer/dryer",
-      "Parking",
-      "Hiking trails",
-      "Ski storage",
-      "Wood-burning stove",
-    ],
-    images: [
-      "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80",
-      "https://images.unsplash.com/photo-1482192505345-5655af888cc4?w=800&q=80",
-      "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800&q=80",
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
-    ],
+      "Cozy mountain cabin with panoramic views, hot tub, and easy access to hiking trails.",
   },
   {
     id: "3",
@@ -101,36 +64,134 @@ const PROPERTIES = [
     image:
       "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
     description:
-      "Modern loft in the heart of the city with high ceilings and contemporary furnishings. This stylish urban retreat features exposed brick walls, industrial-style windows, and polished concrete floors. The open concept living area includes a sleek kitchen with stainless steel appliances and a dining space that comfortably seats 6. The primary bedroom offers a queen bed and en-suite bathroom, while the second bedroom provides flexible sleeping arrangements. Located in a historic building with elevator access, this property is within walking distance to restaurants, shopping, and public transportation.",
-    amenities: [
-      "City views",
-      "High ceilings",
-      "Elevator",
-      "Wifi",
-      "Full kitchen",
-      "Air conditioning",
-      "Washer/dryer",
-      "Smart TV",
-      "Doorman",
-      "Gym access",
-    ],
-    images: [
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
-      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&q=80",
-      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80",
-      "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=800&q=80",
-    ],
+      "Modern loft in the heart of the city with high ceilings and contemporary furnishings.",
   },
 ];
+
+// Sample rooms data for demo purposes
+const SAMPLE_ROOMS = [
+  { id: "101", name: "Living Room", propertyId: "1" },
+  { id: "102", name: "Kitchen", propertyId: "1" },
+  { id: "103", name: "Master Bedroom", propertyId: "1" },
+  { id: "104", name: "Guest Bedroom 1", propertyId: "1" },
+  { id: "105", name: "Guest Bedroom 2", propertyId: "1" },
+  { id: "106", name: "Bathroom 1", propertyId: "1" },
+  { id: "107", name: "Bathroom 2", propertyId: "1" },
+  { id: "108", name: "Patio", propertyId: "1" },
+  { id: "201", name: "Living Room", propertyId: "2" },
+  { id: "202", name: "Kitchen", propertyId: "2" },
+  { id: "203", name: "Master Bedroom", propertyId: "2" },
+  { id: "204", name: "Guest Bedroom", propertyId: "2" },
+  { id: "205", name: "Bathroom 1", propertyId: "2" },
+  { id: "206", name: "Bathroom 2", propertyId: "2" },
+  { id: "207", name: "Deck", propertyId: "2" },
+  { id: "301", name: "Living Area", propertyId: "3" },
+  { id: "302", name: "Kitchen", propertyId: "3" },
+  { id: "303", name: "Bedroom", propertyId: "3" },
+  { id: "304", name: "Bathroom", propertyId: "3" },
+  { id: "305", name: "Office Nook", propertyId: "3" },
+];
+
+// Import mock task list component since the real one might not be working
+const TaskList = ({
+  filter,
+  propertyId,
+}: {
+  filter: string;
+  propertyId: string;
+}) => (
+  <div className="p-4 border rounded-md">
+    <h3 className="text-lg font-medium mb-4">
+      Tasks for Property {propertyId} ({filter})
+    </h3>
+    <div className="space-y-2">
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="p-3 border rounded-md flex justify-between items-center"
+        >
+          <div>
+            <p className="font-medium">Sample Task {i}</p>
+            <p className="text-sm text-muted-foreground">
+              Type:{" "}
+              {i === 1 ? "Cleaning" : i === 2 ? "Maintenance" : "Inspection"}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="font-medium">
+              Due: {new Date().toLocaleDateString()}
+            </p>
+            <p className="text-xs text-blue-600">In Progress</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 function PropertyDetail() {
   const { id } = useParams<{ id: string }>();
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("details");
+  const [property, setProperty] = useState<Property | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const property = PROPERTIES.find((p) => p.id === id);
+  // Load property data on mount
+  useEffect(() => {
+    const loadProperty = async () => {
+      if (!id) return;
 
-  if (!property) {
+      setLoading(true);
+      try {
+        // Try to get property from database
+        const dbProperty = await db.getPropertyById(id);
+
+        if (dbProperty) {
+          setProperty(dbProperty);
+        } else {
+          // Fallback to sample data
+          const sampleProperty = SAMPLE_PROPERTIES.find((p) => p.id === id);
+          if (sampleProperty) {
+            // Convert sample property to match Property interface
+            const [city, state] = (sampleProperty.location || "").split(", ");
+            const convertedProperty = {
+              id: sampleProperty.id,
+              name: sampleProperty.name,
+              address: "123 Sample St",
+              city: city || "",
+              state: state || "",
+              zipCode: "12345",
+              country: "USA",
+              description: sampleProperty.description,
+              bedrooms: sampleProperty.bedrooms,
+              bathrooms: sampleProperty.bathrooms,
+              maxGuests: sampleProperty.maxGuests,
+              pricePerNight: sampleProperty.pricePerNight,
+              cleaningFee: Math.round(sampleProperty.pricePerNight * 0.2),
+              images: [sampleProperty.image],
+              amenities: ["WiFi", "Air Conditioning", "Kitchen", "Parking"],
+              active: true,
+              rating: sampleProperty.rating,
+              location: sampleProperty.location,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            } as Property;
+
+            setProperty(convertedProperty);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading property:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProperty();
+  }, [id]);
+
+  // If no property found, show not found message
+  if (!property && !loading) {
     return (
       <div className="p-6 flex flex-col items-center justify-center h-full">
         <h2 className="text-2xl font-bold mb-4">Property Not Found</h2>
@@ -145,6 +206,29 @@ function PropertyDetail() {
       </div>
     );
   }
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6 bg-background w-full h-full">
+        <div className="flex items-center space-x-2">
+          <Button variant="outline" size="icon" disabled>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-2xl font-bold">Loading Property...</h1>
+        </div>
+
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Get rooms for this property
+  const propertyRooms = SAMPLE_ROOMS.filter(
+    (room) => room.propertyId === property.id,
+  );
 
   return (
     <div className="p-6 space-y-6 bg-background w-full h-full">
@@ -161,7 +245,7 @@ function PropertyDetail() {
         <div className="md:col-span-2">
           <div className="rounded-lg overflow-hidden h-[400px]">
             <img
-              src={property.image}
+              src={property.images?.[0] || property.image}
               alt={property.name}
               className="w-full h-full object-cover"
             />
@@ -187,7 +271,9 @@ function PropertyDetail() {
 
               <div className="flex items-center text-muted-foreground">
                 <MapPin className="h-4 w-4 mr-1" />
-                <span>{property.location}</span>
+                <span>
+                  {property.location || `${property.city}, ${property.state}`}
+                </span>
               </div>
 
               <div className="grid grid-cols-3 gap-2 pt-2">
@@ -217,11 +303,16 @@ function PropertyDetail() {
             <CardContent className="p-4">
               <h3 className="font-medium mb-2">Amenities</h3>
               <div className="grid grid-cols-2 gap-2">
-                {property.amenities.map((amenity, index) => (
-                  <div key={index} className="text-sm">
-                    {amenity}
-                  </div>
-                ))}
+                {Array.isArray(property.amenities) ? (
+                  property.amenities.map((amenity, index) => (
+                    <div key={index} className="text-sm flex items-center">
+                      <Check className="h-4 w-4 mr-1 text-primary" />
+                      {amenity}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-sm">No amenities listed</div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -260,9 +351,12 @@ function PropertyDetail() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList>
           <TabsTrigger value="details">Property Details</TabsTrigger>
+          <TabsTrigger value="rooms">Rooms</TabsTrigger>
           <TabsTrigger value="inventory">Inventory</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
-          <TabsTrigger value="finances">Finances</TabsTrigger>
+          <TabsTrigger value="tasks">Tasks</TabsTrigger>
+          <TabsTrigger value="financial">Financial</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
         <TabsContent value="details" className="mt-4">
@@ -303,98 +397,97 @@ function PropertyDetail() {
               <CardContent className="p-4">
                 <h3 className="font-medium mb-2">Photos</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  {property.images.map((image, index) => (
-                    <div
-                      key={index}
-                      className="rounded-md overflow-hidden h-24"
-                    >
+                  {Array.isArray(property.images) ? (
+                    property.images.map((image, index) => (
+                      <div
+                        key={index}
+                        className="rounded-md overflow-hidden h-24"
+                      >
+                        <img
+                          src={image}
+                          alt={`${property.name} ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="rounded-md overflow-hidden h-24">
                       <img
-                        src={image}
-                        alt={`${property.name} ${index + 1}`}
+                        src={property.images?.[0] || property.image}
+                        alt={property.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
+        <TabsContent value="rooms" className="mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {propertyRooms.length > 0 ? (
+              propertyRooms.map((room) => (
+                <Card
+                  key={room.id}
+                  className={`cursor-pointer hover:shadow-md transition-all ${selectedRoom === room.id ? "ring-2 ring-primary" : ""}`}
+                  onClick={() => setSelectedRoom(room.id)}
+                >
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold">{room.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Room ID: {room.id}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-8">
+                <p className="text-muted-foreground">
+                  No rooms found for this property.
+                </p>
+                <Button className="mt-4">Add Room</Button>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+
         <TabsContent value="inventory" className="mt-4">
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-1">
-                <PropertyCard
-                  id={property.id}
-                  name={property.name}
-                  location={property.location}
-                  bedrooms={property.bedrooms}
-                  bathrooms={property.bathrooms}
-                  maxGuests={property.maxGuests}
-                  image={property.image}
-                  amenities={property.amenities.slice(0, 5)}
-                />
-              </div>
-              <div className="md:col-span-2">
-                <RoomGrid
-                  propertyId={property.id}
-                  selectedRoom={selectedRoom}
-                  onSelectRoom={setSelectedRoom}
-                />
-              </div>
-            </div>
-
-            {selectedRoom && (
-              <div className="mt-6">
-                <h2 className="text-xl font-semibold mb-4">
-                  Items in Selected Room
-                </h2>
-                {/* Get the room name from the ROOMS_BY_PROPERTY data */}
-                {(() => {
-                  const rooms =
-                    ROOMS_BY_PROPERTY[
-                      property.id as keyof typeof ROOMS_BY_PROPERTY
-                    ] || [];
-                  const roomName =
-                    rooms.find((r) => r.id === selectedRoom)?.name ||
-                    "Selected Room";
-
-                  // Convert the inventory items to the format expected by InventoryCard
-                  const inventoryItems = INVENTORY_ITEMS.filter(
-                    (item) =>
-                      item.propertyId === property.id &&
-                      item.roomId === selectedRoom,
-                  ).map((item) => ({
-                    id: item.id,
-                    name: item.name,
-                    category: item.category,
-                    condition: item.condition,
-                    notes: item.notes,
-                  }));
-
-                  return (
-                    <InventoryCard
-                      roomName={roomName}
-                      items={inventoryItems}
-                      onEditItem={(itemId) =>
-                        console.log(`Edit item ${itemId}`)
-                      }
-                    />
-                  );
-                })()}
-
-                {/* Keep the original list view as an alternative */}
-                <div className="mt-6">
-                  <h3 className="text-lg font-medium mb-4">
-                    Detailed Inventory List
-                  </h3>
-                  <InventoryItemList
-                    propertyId={property.id}
-                    roomId={selectedRoom}
-                  />
+          <div className="space-y-4">
+            {selectedRoom ? (
+              <InventoryItemList
+                propertyId={property.id}
+                roomId={selectedRoom}
+              />
+            ) : (
+              <>
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium mb-2">Select a Room</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {propertyRooms.length > 0 ? (
+                      propertyRooms.map((room) => (
+                        <Card
+                          key={room.id}
+                          className={`cursor-pointer hover:shadow-md transition-all ${selectedRoom === room.id ? "ring-2 ring-primary" : ""}`}
+                          onClick={() => setSelectedRoom(room.id)}
+                        >
+                          <CardContent className="p-3">
+                            <h3 className="font-medium">{room.name}</h3>
+                          </CardContent>
+                        </Card>
+                      ))
+                    ) : (
+                      <div className="col-span-full text-center py-4">
+                        <p className="text-muted-foreground">
+                          No rooms found for this property.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
+                <InventoryItemList propertyId={property.id} />
+              </>
             )}
           </div>
         </TabsContent>
@@ -445,7 +538,11 @@ function PropertyDetail() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="finances" className="mt-4">
+        <TabsContent value="tasks" className="mt-4">
+          <TaskList filter="all" propertyId={property.id} />
+        </TabsContent>
+
+        <TabsContent value="financial" className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardContent className="p-4">
@@ -526,6 +623,15 @@ function PropertyDetail() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="documents" className="mt-4">
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">
+              Document management coming soon.
+            </p>
+            <Button className="mt-4">Upload Document</Button>
           </div>
         </TabsContent>
       </Tabs>

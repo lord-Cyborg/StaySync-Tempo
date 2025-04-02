@@ -50,6 +50,39 @@ const ROOMS_BY_PROPERTY = {
     { id: "304", name: "Bathroom" },
     { id: "305", name: "Office Nook" },
   ],
+  "4": [
+    // Lakeside Cottage
+    { id: "401", name: "Living Room" },
+    { id: "402", name: "Kitchen" },
+    { id: "403", name: "Master Bedroom" },
+    { id: "404", name: "Guest Bedroom" },
+    { id: "405", name: "Bathroom 1" },
+    { id: "406", name: "Bathroom 2" },
+    { id: "407", name: "Dock" },
+  ],
+  "5": [
+    // Desert Oasis
+    { id: "501", name: "Living Room" },
+    { id: "502", name: "Kitchen" },
+    { id: "503", name: "Master Bedroom" },
+    { id: "504", name: "Guest Bedroom 1" },
+    { id: "505", name: "Guest Bedroom 2" },
+    { id: "506", name: "Bathroom 1" },
+    { id: "507", name: "Bathroom 2" },
+    { id: "508", name: "Pool Area" },
+  ],
+  "6": [
+    // Historic Brownstone
+    { id: "601", name: "Living Room" },
+    { id: "602", name: "Kitchen" },
+    { id: "603", name: "Dining Room" },
+    { id: "604", name: "Master Bedroom" },
+    { id: "605", name: "Guest Bedroom 1" },
+    { id: "606", name: "Guest Bedroom 2" },
+    { id: "607", name: "Bathroom 1" },
+    { id: "608", name: "Bathroom 2" },
+    { id: "609", name: "Study" },
+  ],
 };
 
 // Define inventory items data
@@ -219,6 +252,84 @@ const INVENTORY_ITEMS = [
     value: 85,
     notes: "Adjustable LED lamp",
   },
+  // Additional inventory items for other properties
+  {
+    id: "16",
+    name: "Outdoor Dining Set",
+    propertyId: "4",
+    roomId: "407",
+    category: "furniture",
+    condition: "good",
+    purchaseDate: new Date(2022, 4, 20),
+    value: 750,
+    notes: "Table with 6 chairs, weather-resistant",
+  },
+  {
+    id: "17",
+    name: "Kayak",
+    propertyId: "4",
+    roomId: "407",
+    category: "recreation",
+    condition: "excellent",
+    purchaseDate: new Date(2022, 5, 15),
+    value: 600,
+    notes: "Two-person kayak with paddles",
+  },
+  {
+    id: "18",
+    name: "Outdoor Grill",
+    propertyId: "5",
+    roomId: "508",
+    category: "appliances",
+    condition: "good",
+    purchaseDate: new Date(2021, 3, 10),
+    value: 850,
+    notes: "Propane grill with side burner",
+  },
+  {
+    id: "19",
+    name: "Pool Loungers",
+    propertyId: "5",
+    roomId: "508",
+    category: "furniture",
+    condition: "good",
+    purchaseDate: new Date(2022, 2, 25),
+    value: 400,
+    notes: "Set of 4 adjustable loungers",
+  },
+  {
+    id: "20",
+    name: "Antique Chandelier",
+    propertyId: "6",
+    roomId: "603",
+    category: "lighting",
+    condition: "excellent",
+    purchaseDate: new Date(2020, 9, 5),
+    value: 1200,
+    notes: "Crystal chandelier, restored",
+  },
+  {
+    id: "21",
+    name: "Fireplace Tools",
+    propertyId: "6",
+    roomId: "601",
+    category: "accessories",
+    condition: "good",
+    purchaseDate: new Date(2021, 10, 12),
+    value: 150,
+    notes: "Wrought iron set with stand",
+  },
+  {
+    id: "22",
+    name: "Antique Writing Desk",
+    propertyId: "6",
+    roomId: "609",
+    category: "furniture",
+    condition: "good",
+    purchaseDate: new Date(2019, 7, 15),
+    value: 950,
+    notes: "Mahogany with leather inlay",
+  },
 ];
 
 interface InventoryItemListProps {
@@ -272,6 +383,11 @@ function InventoryItemList({ propertyId, roomId }: InventoryItemListProps) {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-8"
           />
+          {searchTerm && (
+            <p className="text-sm text-muted-foreground mt-1">
+              Searching for: "{searchTerm}"
+            </p>
+          )}
         </div>
         <div className="flex flex-wrap gap-2">
           {!roomId && (
@@ -302,6 +418,8 @@ function InventoryItemList({ propertyId, roomId }: InventoryItemListProps) {
               <SelectItem value="decor">Decor</SelectItem>
               <SelectItem value="linens">Linens</SelectItem>
               <SelectItem value="kitchenware">Kitchenware</SelectItem>
+              <SelectItem value="recreation">Recreation</SelectItem>
+              <SelectItem value="accessories">Accessories</SelectItem>
             </SelectContent>
           </Select>
           <Select value={conditionFilter} onValueChange={setConditionFilter}>
@@ -395,7 +513,11 @@ function InventoryItemList({ propertyId, roomId }: InventoryItemListProps) {
                   colSpan={roomId ? 6 : 7}
                   className="text-center py-4 text-muted-foreground"
                 >
-                  No inventory items found
+                  {searchTerm ? (
+                    <>No inventory items found matching "{searchTerm}"</>
+                  ) : (
+                    "No inventory items found"
+                  )}
                 </TableCell>
               </TableRow>
             )}
