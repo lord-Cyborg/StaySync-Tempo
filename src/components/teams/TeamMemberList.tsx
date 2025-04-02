@@ -16,83 +16,144 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
-import { Edit, Eye, Search, Trash2, Mail, Phone } from "lucide-react";
-
-const TEAM_MEMBERS = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    phone: "+1 (555) 123-4567",
-    role: "maintenance",
-    joinDate: new Date(2021, 5, 15),
-    status: "active",
-    tasksCompleted: 145,
-    rating: 4.8,
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    phone: "+1 (555) 987-6543",
-    role: "cleaning",
-    joinDate: new Date(2022, 2, 10),
-    status: "active",
-    tasksCompleted: 87,
-    rating: 4.9,
-  },
-  {
-    id: "3",
-    name: "Robert Johnson",
-    email: "robert@example.com",
-    phone: "+1 (555) 456-7890",
-    role: "maintenance",
-    joinDate: new Date(2021, 8, 22),
-    status: "active",
-    tasksCompleted: 112,
-    rating: 4.6,
-  },
-  {
-    id: "4",
-    name: "Emily Davis",
-    email: "emily@example.com",
-    phone: "+1 (555) 234-5678",
-    role: "cleaning",
-    joinDate: new Date(2022, 1, 5),
-    status: "inactive",
-    tasksCompleted: 65,
-    rating: 4.7,
-  },
-  {
-    id: "5",
-    name: "Michael Wilson",
-    email: "michael@example.com",
-    phone: "+1 (555) 876-5432",
-    role: "maintenance",
-    joinDate: new Date(2020, 11, 15),
-    status: "active",
-    tasksCompleted: 210,
-    rating: 4.9,
-  },
-];
+import {
+  Edit,
+  Eye,
+  Search,
+  Trash2,
+  Mail,
+  Phone,
+  Calendar,
+  Star,
+  CheckCircle2,
+} from "lucide-react";
+import { db } from "@/lib/database";
+import { TeamMember } from "@/lib/database/schema";
 
 function TeamMemberList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState<Partial<TeamMember>>({});
+
+  // Load team members from database
+  useState(() => {
+    const loadTeamMembers = async () => {
+      const members = await db.getTeamMembers();
+      setTeamMembers(members);
+    };
+    loadTeamMembers();
+  }, []);
 
   // Filter team members based on search term, role, and status
-  const filteredMembers = TEAM_MEMBERS.filter((member) => {
+  const filteredMembers = teamMembers.filter((member) => {
     const matchesSearch =
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === "all" || member.role === roleFilter;
     const matchesStatus =
-      statusFilter === "all" || member.status === statusFilter;
+      statusFilter === "all" ||
+      (statusFilter === "active" && member.active) ||
+      (statusFilter === "inactive" && !member.active);
 
     return matchesSearch && matchesRole && matchesStatus;
   });
+
+  // View member details
+  const handleViewMember = (member: TeamMember) => {
+    setSelectedMember(member);
+    setIsViewDialogOpen(true);
+  };
+
+  // Edit member
+  const handleEditMember = (member: TeamMember) => {
+    setSelectedMember(member);
+    setEditFormData({
+      name: member.name,
+      email: member.email,
+      phone: member.phone,
+      role: member.role,
+      active: member.active,
+      hourlyRate: member.hourlyRate,
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  // Handle edit form input changes
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  // Handle edit form select changes
+  const handleEditSelectChange = (name: string, value: string) => {
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Save edited member
+  const handleSaveEdit = async () => {
+    if (!selectedMember) return;
+
+    try {
+      await db.updateTeamMember(selectedMember.id, editFormData);
+      // Refresh the team members list
+      const updatedMembers = await db.getTeamMembers();
+      setTeamMembers(updatedMembers);
+      setIsEditDialogOpen(false);
+    } catch (error) {
+      console.error("Error updating team member:", error);
+    }
+  };
+
+  // Delete member
+  const handleDeleteClick = (member: TeamMember) => {
+    setSelectedMember(member);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedMember) return;
+
+    try {
+      await db.deleteTeamMember(selectedMember.id);
+      // Refresh the team members list
+      const updatedMembers = await db.getTeamMembers();
+      setTeamMembers(updatedMembers);
+      setIsDeleteDialogOpen(false);
+    } catch (error) {
+      console.error("Error deleting team member:", error);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -114,8 +175,10 @@ function TeamMemberList() {
             <SelectContent>
               <SelectItem value="all">All Roles</SelectItem>
               <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="cleaning">Cleaning</SelectItem>
-              <SelectItem value="management">Management</SelectItem>
+              <SelectItem value="cleaner">Cleaner</SelectItem>
+              <SelectItem value="property_manager">Manager</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="inspector">Inspector</SelectItem>
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -140,7 +203,7 @@ function TeamMemberList() {
               <TableHead>Role</TableHead>
               <TableHead>Join Date</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">Performance</TableHead>
+              <TableHead className="text-right">Rate</TableHead>
               <TableHead className="w-[100px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -165,40 +228,52 @@ function TeamMemberList() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="capitalize">{member.role}</TableCell>
+                  <TableCell className="capitalize">
+                    {member.role.replace("_", " ")}
+                  </TableCell>
                   <TableCell>
-                    {format(member.joinDate, "MMM d, yyyy")}
+                    {format(new Date(member.startDate), "MMM d, yyyy")}
                   </TableCell>
                   <TableCell>
                     <span
                       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        member.status === "active"
+                        member.active
                           ? "bg-green-100 text-green-800"
                           : "bg-red-100 text-red-800"
                       }`}
                     >
-                      {member.status}
+                      {member.active ? "active" : "inactive"}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <div>
-                      <p className="font-medium">
-                        {member.tasksCompleted} tasks
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {member.rating} / 5 rating
-                      </p>
+                      <p className="font-medium">${member.hourlyRate}/hr</p>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-2">
-                      <Button variant="ghost" size="icon">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleViewMember(member)}
+                        title="View details"
+                      >
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditMember(member)}
+                        title="Edit member"
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteClick(member)}
+                        title="Delete member"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -218,6 +293,205 @@ function TeamMemberList() {
           </TableBody>
         </Table>
       </div>
+
+      {/* View Member Dialog */}
+      {selectedMember && (
+        <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Team Member Details</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                <span className="font-medium">Name:</span>
+                <span>{selectedMember.name}</span>
+              </div>
+              <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                <span className="font-medium">Email:</span>
+                <span>{selectedMember.email}</span>
+              </div>
+              <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                <span className="font-medium">Phone:</span>
+                <span>{selectedMember.phone}</span>
+              </div>
+              <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                <span className="font-medium">Role:</span>
+                <span className="capitalize">
+                  {selectedMember.role.replace("_", " ")}
+                </span>
+              </div>
+              <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                <span className="font-medium">Status:</span>
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${selectedMember.active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                >
+                  {selectedMember.active ? "Active" : "Inactive"}
+                </span>
+              </div>
+              <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                <span className="font-medium">Start Date:</span>
+                <span>
+                  {format(new Date(selectedMember.startDate), "MMMM d, yyyy")}
+                </span>
+              </div>
+              <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+                <span className="font-medium">Hourly Rate:</span>
+                <span>${selectedMember.hourlyRate}/hour</span>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsViewDialogOpen(false)}
+              >
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Edit Member Dialog */}
+      {selectedMember && (
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Team Member</DialogTitle>
+              <DialogDescription>
+                Make changes to the team member's information below.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="name" className="text-right font-medium">
+                  Name
+                </label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={editFormData.name || ""}
+                  onChange={handleEditInputChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="email" className="text-right font-medium">
+                  Email
+                </label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={editFormData.email || ""}
+                  onChange={handleEditInputChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="phone" className="text-right font-medium">
+                  Phone
+                </label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  value={editFormData.phone || ""}
+                  onChange={handleEditInputChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="role" className="text-right font-medium">
+                  Role
+                </label>
+                <Select
+                  value={(editFormData.role as string) || ""}
+                  onValueChange={(value) =>
+                    handleEditSelectChange("role", value)
+                  }
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                    <SelectItem value="cleaner">Cleaner</SelectItem>
+                    <SelectItem value="property_manager">
+                      Property Manager
+                    </SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="inspector">Inspector</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="hourlyRate" className="text-right font-medium">
+                  Hourly Rate ($)
+                </label>
+                <Input
+                  id="hourlyRate"
+                  name="hourlyRate"
+                  type="number"
+                  value={editFormData.hourlyRate || ""}
+                  onChange={handleEditInputChange}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <label htmlFor="active" className="text-right font-medium">
+                  Status
+                </label>
+                <div className="flex items-center space-x-2 col-span-3">
+                  <input
+                    type="checkbox"
+                    id="active"
+                    name="active"
+                    checked={editFormData.active}
+                    onChange={handleEditInputChange}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <label htmlFor="active">Active</label>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSaveEdit}>Save Changes</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              team member
+              {selectedMember && ` ${selectedMember.name}`} and remove their
+              data from the system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

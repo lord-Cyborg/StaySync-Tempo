@@ -18,10 +18,12 @@ export interface Property {
   images: string[];
   amenities: string[];
   active: boolean;
-  status?: "B2B" | "N/R" | "b2b";
+  status?: "B2B" | "N/R" | "b2b" | "available" | "unavailable" | "maintenance";
   doorCode?: string;
   wifiPassword?: string;
   wifiStatus?: "on" | "off";
+  rating?: number;
+  location?: string; // For backward compatibility
   createdAt: string;
   updatedAt: string;
 }

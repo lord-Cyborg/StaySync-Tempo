@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,6 +21,40 @@ import {
 function TaskManagement() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [taskFilter, setTaskFilter] = useState("all");
+  const [taskStats, setTaskStats] = useState({
+    total: 0,
+    completed: 0,
+    inProgress: 0,
+    overdue: 0,
+  });
+
+  // Function to update task statistics
+  const updateTaskStats = () => {
+    // In a real app, this would fetch data from the database
+    // For now, we'll just use some placeholder values
+    setTaskStats({
+      total: 24,
+      completed: 12,
+      inProgress: 8,
+      overdue: 4,
+    });
+  };
+
+  // Update stats when component mounts
+  useEffect(() => {
+    updateTaskStats();
+  }, []);
+
+  // Handle task form submission
+  const handleTaskFormSubmit = () => {
+    setIsDialogOpen(false);
+    updateTaskStats(); // Update stats after adding a new task
+  };
+
+  // Handle task updates (complete, edit, delete)
+  const handleTaskUpdate = () => {
+    updateTaskStats(); // Update stats after task changes
+  };
 
   return (
     <div className="p-6 space-y-6 bg-background w-full h-full">
@@ -37,7 +71,7 @@ function TaskManagement() {
             <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">24</div>
+            <div className="text-2xl font-bold">{taskStats.total}</div>
             <p className="text-xs text-muted-foreground">All tasks</p>
           </CardContent>
         </Card>
@@ -46,8 +80,15 @@ function TaskManagement() {
             <CardTitle className="text-sm font-medium">Completed</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">12</div>
-            <p className="text-xs text-muted-foreground">50% completion rate</p>
+            <div className="text-2xl font-bold text-green-600">
+              {taskStats.completed}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {taskStats.total > 0
+                ? Math.round((taskStats.completed / taskStats.total) * 100)
+                : 0}
+              % completion rate
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -55,8 +96,15 @@ function TaskManagement() {
             <CardTitle className="text-sm font-medium">In Progress</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">8</div>
-            <p className="text-xs text-muted-foreground">33% of all tasks</p>
+            <div className="text-2xl font-bold text-blue-600">
+              {taskStats.inProgress}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {taskStats.total > 0
+                ? Math.round((taskStats.inProgress / taskStats.total) * 100)
+                : 0}
+              % of all tasks
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -64,8 +112,15 @@ function TaskManagement() {
             <CardTitle className="text-sm font-medium">Overdue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">4</div>
-            <p className="text-xs text-muted-foreground">17% of all tasks</p>
+            <div className="text-2xl font-bold text-red-600">
+              {taskStats.overdue}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {taskStats.total > 0
+                ? Math.round((taskStats.overdue / taskStats.total) * 100)
+                : 0}
+              % of all tasks
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -90,16 +145,16 @@ function TaskManagement() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="mt-4">
-          <TaskList filter="all" />
+          <TaskList filter="all" onTaskUpdate={handleTaskUpdate} />
         </TabsContent>
         <TabsContent value="completed" className="mt-4">
-          <TaskList filter="completed" />
+          <TaskList filter="completed" onTaskUpdate={handleTaskUpdate} />
         </TabsContent>
         <TabsContent value="in-progress" className="mt-4">
-          <TaskList filter="in-progress" />
+          <TaskList filter="in-progress" onTaskUpdate={handleTaskUpdate} />
         </TabsContent>
         <TabsContent value="overdue" className="mt-4">
-          <TaskList filter="overdue" />
+          <TaskList filter="overdue" onTaskUpdate={handleTaskUpdate} />
         </TabsContent>
       </Tabs>
 
@@ -108,7 +163,7 @@ function TaskManagement() {
           <DialogHeader>
             <DialogTitle>Create New Task</DialogTitle>
           </DialogHeader>
-          <TaskForm onSubmit={() => setIsDialogOpen(false)} />
+          <TaskForm onSubmit={handleTaskFormSubmit} />
         </DialogContent>
       </Dialog>
     </div>
