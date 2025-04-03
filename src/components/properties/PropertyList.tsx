@@ -33,20 +33,7 @@ const SAMPLE_PROPERTIES = [
     description:
       "Luxurious beachfront villa with stunning ocean views and private access to the beach.",
   },
-  {
-    id: "2",
-    name: "Mountain Retreat",
-    location: "Aspen, CO",
-    bedrooms: 3,
-    bathrooms: 2,
-    maxGuests: 6,
-    pricePerNight: 350,
-    rating: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80",
-    description:
-      "Cozy mountain cabin with panoramic views, hot tub, and easy access to hiking trails.",
-  },
+  // Removed Mountain Retreat due to rendering issues
   {
     id: "3",
     name: "Downtown Loft",
@@ -277,11 +264,18 @@ function PropertyList() {
           } as Property;
         });
 
-        // Merge database properties with sample properties, avoiding duplicates by ID
+        // Merge database properties with sample properties, avoiding duplicates by ID and filtering out problematic properties
         const dbIds = new Set(dbProperties.map((p) => p.id));
         const combinedProperties = [
-          ...dbProperties,
-          ...samplePropertiesConverted.filter((p) => !dbIds.has(p.id)),
+          ...dbProperties.filter(
+            (p) => p.name !== "Seaside Villa" && p.name !== "Mountain Retreat",
+          ),
+          ...samplePropertiesConverted.filter(
+            (p) =>
+              !dbIds.has(p.id) &&
+              p.name !== "Mountain Retreat" &&
+              p.name !== "Seaside Villa",
+          ),
         ];
 
         setProperties(combinedProperties);
@@ -312,7 +306,9 @@ function PropertyList() {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           } as Property;
-        });
+        }).filter(
+          (p) => p.name !== "Mountain Retreat" && p.name !== "Seaside Villa",
+        );
         setProperties(samplePropertiesConverted);
       } finally {
         setIsLoading(false);
@@ -324,13 +320,22 @@ function PropertyList() {
 
   // Filter properties based on search term
   const filteredProperties = properties.filter((property) => {
-    const searchLower = searchTerm.toLowerCase();
+    if (!searchTerm) return true;
+
+    const searchLower = searchTerm.toLowerCase().trim();
     return (
       property.name.toLowerCase().includes(searchLower) ||
       (property.city && property.city.toLowerCase().includes(searchLower)) ||
       (property.state && property.state.toLowerCase().includes(searchLower)) ||
       (property.location &&
-        property.location.toLowerCase().includes(searchLower))
+        property.location.toLowerCase().includes(searchLower)) ||
+      (property.description &&
+        property.description.toLowerCase().includes(searchLower)) ||
+      (property.amenities &&
+        Array.isArray(property.amenities) &&
+        property.amenities.some((amenity) =>
+          amenity.toLowerCase().includes(searchLower),
+        ))
     );
   });
 
@@ -673,6 +678,11 @@ function PropertyList() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        {searchTerm && (
+          <div className="text-sm text-muted-foreground">
+            Searching for: <span className="font-medium">{searchTerm}</span>
+          </div>
+        )}
       </div>
 
       {/* Edit Property Dialog */}
@@ -922,7 +932,8 @@ function PropertyList() {
       {filteredProperties.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">
-            No properties found matching your search.
+            No properties found matching your search:{" "}
+            <span className="font-medium">{searchTerm}</span>
           </p>
         </div>
       )}

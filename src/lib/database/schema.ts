@@ -143,13 +143,93 @@ export interface TeamSchedule {
   updatedAt: string;
 }
 
+// Chat Conversations
+export interface ChatConversation {
+  id: string;
+  participants: string[];
+  title?: string;
+  lastMessageId?: string;
+  lastMessageTimestamp?: string;
+  unreadCount?: number;
+  type: "direct" | "group" | "service";
+  serviceType?: "maintenance" | "cleaning" | "inspection" | "other";
+  propertyId?: string;
+  taskId?: string;
+  estimateId?: string;
+  invoiceId?: string;
+  reportId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Chat Messages
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  receiverId?: string;
+  content: string;
+  contentType: "text" | "image" | "file" | "estimate" | "invoice" | "report";
+  attachmentUrl?: string;
+  attachmentType?: string;
+  read: boolean;
+  readAt?: string;
+  timestamp: string;
+  metadata?: any;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Service Estimates
+export interface ServiceEstimate {
+  id: string;
+  conversationId: string;
+  propertyId: string;
+  serviceProviderId: string;
+  requesterId: string;
+  title: string;
+  description: string;
+  serviceType: "maintenance" | "cleaning" | "inspection" | "other";
+  estimatedCost: number;
+  estimatedHours?: number;
+  materials?: string[];
+  materialsCost?: number;
+  laborCost?: number;
+  status: "draft" | "sent" | "approved" | "rejected" | "completed";
+  approvedById?: string;
+  approvedAt?: string;
+  rejectionReason?: string;
+  validUntil?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Service Estimate Items
+export interface ServiceEstimateItem {
+  id: string;
+  estimateId: string;
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  amount: number;
+  itemType: "labor" | "material" | "service" | "other";
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Invoices
 export interface Invoice {
   id: string;
   bookingId?: string;
   propertyId: string;
-  guestName: string;
-  guestEmail: string;
+  guestName?: string;
+  guestEmail?: string;
+  estimateId?: string;
+  conversationId?: string;
+  serviceProviderId?: string;
+  clientId: string;
   issueDate: string;
   dueDate: string;
   totalAmount: number;
@@ -171,7 +251,39 @@ export interface InvoiceLineItem {
   quantity: number;
   unitPrice: number;
   amount: number;
-  itemType?: "accommodation" | "service" | "extra" | "discount" | "tax";
+  itemType?:
+    | "accommodation"
+    | "service"
+    | "extra"
+    | "discount"
+    | "tax"
+    | "labor"
+    | "material";
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Service Reports
+export interface ServiceReport {
+  id: string;
+  conversationId: string;
+  propertyId: string;
+  serviceProviderId: string;
+  clientId: string;
+  estimateId?: string;
+  invoiceId?: string;
+  title: string;
+  description: string;
+  serviceType: "maintenance" | "cleaning" | "inspection" | "other";
+  serviceDate: string;
+  completionDate: string;
+  status: "draft" | "sent" | "acknowledged";
+  findings?: string;
+  recommendations?: string;
+  followUpRequired?: boolean;
+  followUpDetails?: string;
+  attachments?: string[];
+  photos?: string[];
   createdAt: string;
   updatedAt: string;
 }

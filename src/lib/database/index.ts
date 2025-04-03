@@ -51,32 +51,28 @@ const initializeDatabase = () => {
       updatedAt: new Date().toISOString(),
     },
   ];
-  // Sample properties
-  const property1: Property = {
+  // Create initial properties
+  const property1 = {
     id: uuidv4(),
     name: "Seaside Villa",
     address: "123 Ocean Drive",
-    city: "Miami",
-    state: "FL",
-    zipCode: "33139",
+    city: "Malibu",
+    state: "CA",
+    zipCode: "90210",
     country: "USA",
-    description: "Beautiful beachfront property with stunning ocean views",
-    bedrooms: 3,
-    bathrooms: 2,
-    maxGuests: 6,
+    propertyType: "villa",
+    bedrooms: 4,
+    bathrooms: 3,
+    maxGuests: 8,
     pricePerNight: 250,
-    cleaningFee: 100,
-    images: [
-      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80",
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
-    ],
-    amenities: ["WiFi", "Pool", "Beach Access", "Air Conditioning"],
+    description: "Luxury villa with ocean views",
+    amenities: ["Pool", "Hot Tub", "WiFi", "Beach Access"],
     active: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
-  const property2: Property = {
+  const property2 = {
     id: uuidv4(),
     name: "Mountain Retreat",
     address: "456 Pine Road",
@@ -84,22 +80,19 @@ const initializeDatabase = () => {
     state: "CO",
     zipCode: "81611",
     country: "USA",
-    description: "Cozy cabin in the mountains with fireplace and hot tub",
-    bedrooms: 2,
-    bathrooms: 1,
-    maxGuests: 4,
-    pricePerNight: 180,
-    cleaningFee: 75,
-    images: [
-      "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80",
-      "https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=800&q=80",
-    ],
-    amenities: ["WiFi", "Fireplace", "Hot Tub", "Hiking Trails"],
+    propertyType: "cabin",
+    bedrooms: 3,
+    bathrooms: 2,
+    maxGuests: 6,
+    pricePerNight: 190,
+    description: "Cozy mountain cabin with stunning views",
+    amenities: ["Fireplace", "Hiking Trails", "WiFi", "Hot Tub"],
     active: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
 
+  // Add properties to the array
   properties = [property1, property2];
 
   // Sample rooms for property1

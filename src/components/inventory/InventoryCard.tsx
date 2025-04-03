@@ -15,7 +15,7 @@ interface InventoryItem {
   id: string;
   name: string;
   category: string;
-  condition: "excellent" | "good" | "fair" | "poor" | "needs-replacement";
+  condition: string;
   notes?: string;
 }
 
