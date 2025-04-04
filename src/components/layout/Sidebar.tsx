@@ -79,14 +79,16 @@ function Sidebar({ closeSidebar }: SidebarProps) {
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl overflow-hidden bg-gradient-to-br from-primary to-purple-600 p-2 shadow-md">
             <img
-              src="/logo.png"
+              src="https://raw.githubusercontent.com/lord-Cyborg/StaySync-Tempo/main/logo-icon.png"
               alt="StaySync Logo"
               className="w-full h-full object-contain filter brightness-0 invert"
             />
           </div>
-          <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-purple-400">
-            StaySync
-          </h2>
+          <img
+            src="https://raw.githubusercontent.com/lord-Cyborg/StaySync-Tempo/main/StaySync_Brand.png"
+            alt="StaySync Brand"
+            className="h-6 object-contain"
+          />
         </div>
 
         {/* Close button - only visible on mobile */}

@@ -46,8 +46,19 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
-          <div className="flex justify-center mb-4">
-            <img src="/logo.png" alt="Logo" className="h-12" />
+          <div className="flex flex-col items-center mb-4 gap-2">
+            <div className="h-16 w-16 rounded-xl overflow-hidden bg-gradient-to-br from-primary to-purple-600 p-2 shadow-md">
+              <img
+                src="https://raw.githubusercontent.com/lord-Cyborg/StaySync-Tempo/main/logo-icon.png"
+                alt="StaySync Logo"
+                className="w-full h-full object-contain filter brightness-0 invert"
+              />
+            </div>
+            <img
+              src="https://raw.githubusercontent.com/lord-Cyborg/StaySync-Tempo/main/StaySync_Brand.png"
+              alt="StaySync Brand"
+              className="h-8 object-contain mt-2"
+            />
           </div>
           <CardTitle className="text-2xl font-bold text-center">
             Welcome Back
