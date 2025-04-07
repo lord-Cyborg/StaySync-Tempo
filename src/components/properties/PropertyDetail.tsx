@@ -20,7 +20,7 @@ import {
 import { db } from "@/lib/database";
 import { Property } from "@/lib/database/schema";
 import RoomGrid from "../inventory/RoomGrid";
-import InventoryItemList from "../inventory/InventoryItemList";
+import InventoryControl from "../inventory/InventoryControl";
 
 // Sample properties data for fallback
 const SAMPLE_PROPERTIES = [
@@ -351,7 +351,6 @@ function PropertyDetail() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList>
           <TabsTrigger value="details">Property Details</TabsTrigger>
-          <TabsTrigger value="rooms">Rooms</TabsTrigger>
           <TabsTrigger value="inventory">Inventory</TabsTrigger>
           <TabsTrigger value="bookings">Bookings</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
@@ -425,71 +424,9 @@ function PropertyDetail() {
           </div>
         </TabsContent>
 
-        <TabsContent value="rooms" className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {propertyRooms.length > 0 ? (
-              propertyRooms.map((room) => (
-                <Card
-                  key={room.id}
-                  className={`cursor-pointer hover:shadow-md transition-all ${selectedRoom === room.id ? "ring-2 ring-primary" : ""}`}
-                  onClick={() => setSelectedRoom(room.id)}
-                >
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold">{room.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Room ID: {room.id}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="col-span-3 text-center py-8">
-                <p className="text-muted-foreground">
-                  No rooms found for this property.
-                </p>
-                <Button className="mt-4">Add Room</Button>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-
         <TabsContent value="inventory" className="mt-4">
-          <div className="space-y-4">
-            {selectedRoom ? (
-              <InventoryItemList
-                propertyId={property.id}
-                roomId={selectedRoom}
-              />
-            ) : (
-              <>
-                <div className="mb-6">
-                  <h3 className="text-lg font-medium mb-2">Select a Room</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {propertyRooms.length > 0 ? (
-                      propertyRooms.map((room) => (
-                        <Card
-                          key={room.id}
-                          className={`cursor-pointer hover:shadow-md transition-all ${selectedRoom === room.id ? "ring-2 ring-primary" : ""}`}
-                          onClick={() => setSelectedRoom(room.id)}
-                        >
-                          <CardContent className="p-3">
-                            <h3 className="font-medium">{room.name}</h3>
-                          </CardContent>
-                        </Card>
-                      ))
-                    ) : (
-                      <div className="col-span-full text-center py-4">
-                        <p className="text-muted-foreground">
-                          No rooms found for this property.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <InventoryItemList propertyId={property.id} />
-              </>
-            )}
-          </div>
+          {/* Replace the existing inventory section with InventoryControl component */}
+          <InventoryControl propertyId={property.id} />
         </TabsContent>
 
         <TabsContent value="bookings" className="mt-4">

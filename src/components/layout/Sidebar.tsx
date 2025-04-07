@@ -23,7 +23,6 @@ const mainNavItems = [
   { name: "Properties", icon: Building, path: "/properties" },
   { name: "Bookings", icon: CalendarDays, path: "/bookings" },
   { name: "Tasks", icon: ClipboardList, path: "/tasks" },
-  { name: "Inventory", icon: Package, path: "/inventory" },
   { name: "Team", icon: Users, path: "/team" },
   { name: "Finance", icon: DollarSign, path: "/finance" },
   { name: "Chat", icon: MessageSquare, path: "/chat" },
@@ -113,7 +112,7 @@ function Sidebar({ closeSidebar }: SidebarProps) {
                 <Users className="h-4 w-4 text-white" />
               </div>
               <div>
-                <p className="text-sm font-medium">Admin User</p>
+                <p className="text-sm font-medium">Edmark</p>
                 <p className="text-xs text-muted-foreground">
                   admin@example.com
                 </p>

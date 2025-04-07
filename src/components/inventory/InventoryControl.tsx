@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, Grid, List, Plus } from "lucide-react";
-import PropertySelector from "./PropertySelector";
 import RoomGrid from "./RoomGrid";
 import InventoryItemList from "./InventoryItemList";
 import InventoryItemForm from "./InventoryItemForm";
@@ -14,9 +13,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-function InventoryControl() {
+interface InventoryControlProps {
+  propertyId?: string;
+}
+
+function InventoryControl({ propertyId = "1" }: InventoryControlProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedProperty, setSelectedProperty] = useState("1");
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [view, setView] = useState("grid");
 
@@ -81,11 +83,6 @@ function InventoryControl() {
       </div>
 
       <div className="space-y-4">
-        <PropertySelector
-          selectedProperty={selectedProperty}
-          onSelectProperty={setSelectedProperty}
-        />
-
         <Tabs value={view} onValueChange={setView} className="w-full">
           <TabsList>
             <TabsTrigger value="grid" className="flex items-center">
@@ -99,7 +96,7 @@ function InventoryControl() {
           </TabsList>
           <TabsContent value="grid" className="mt-4">
             <RoomGrid
-              propertyId={selectedProperty}
+              propertyId={propertyId}
               selectedRoom={selectedRoom}
               onSelectRoom={setSelectedRoom}
             />
@@ -109,14 +106,14 @@ function InventoryControl() {
                   Items in Selected Room
                 </h2>
                 <InventoryItemList
-                  propertyId={selectedProperty}
+                  propertyId={propertyId}
                   roomId={selectedRoom}
                 />
               </div>
             )}
           </TabsContent>
           <TabsContent value="list" className="mt-4">
-            <InventoryItemList propertyId={selectedProperty} />
+            <InventoryItemList propertyId={propertyId} />
           </TabsContent>
         </Tabs>
       </div>
@@ -127,7 +124,7 @@ function InventoryControl() {
             <DialogTitle>Add Inventory Item</DialogTitle>
           </DialogHeader>
           <InventoryItemForm
-            propertyId={selectedProperty}
+            propertyId={propertyId}
             roomId={selectedRoom || undefined}
             onSubmit={() => setIsDialogOpen(false)}
           />
