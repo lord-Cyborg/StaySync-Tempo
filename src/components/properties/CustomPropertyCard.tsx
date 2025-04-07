@@ -50,16 +50,13 @@ function CustomPropertyCard({
   };
 
   const getStatusBadgeVariant = () => {
-    switch (status) {
-      case "B2B":
-        return "default";
-      case "N/R":
-        return "secondary";
-      case "b2b":
-        return "outline";
-      default:
-        return "outline";
-    }
+    if (!status) return "outline";
+
+    const upperStatus = status.toUpperCase();
+
+    if (upperStatus === "B2B") return "default";
+    if (upperStatus === "N/R") return "secondary";
+    return "outline";
   };
 
   const getStatusOptionButtonClass = (option: "EC" | "LT" | "Normal") => {
@@ -121,31 +118,33 @@ function CustomPropertyCard({
         )}
 
         {/* B2B Status selection buttons in bottom center (conditional) */}
-        {status === "B2B" && (
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            <button
-              className={getStatusOptionButtonClass("EC")}
-              onClick={() => handleStatusOptionChange("EC")}
-              title="Early Check-in"
-            >
-              EC
-            </button>
-            <button
-              className={getStatusOptionButtonClass("LT")}
-              onClick={() => handleStatusOptionChange("LT")}
-              title="Late Check-out"
-            >
-              LT
-            </button>
-            <button
-              className={getStatusOptionButtonClass("Normal")}
-              onClick={() => handleStatusOptionChange("Normal")}
-              title="Normal"
-            >
-              {statusOption === "Normal" ? "" : "N"}
-            </button>
-          </div>
-        )}
+        {status &&
+          (status.toUpperCase() === "B2B" ||
+            status.toLowerCase() === "b2b") && (
+            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              <button
+                className={getStatusOptionButtonClass("EC")}
+                onClick={() => handleStatusOptionChange("EC")}
+                title="Early Check-in"
+              >
+                EC
+              </button>
+              <button
+                className={getStatusOptionButtonClass("LT")}
+                onClick={() => handleStatusOptionChange("LT")}
+                title="Late Check-out"
+              >
+                LT
+              </button>
+              <button
+                className={getStatusOptionButtonClass("Normal")}
+                onClick={() => handleStatusOptionChange("Normal")}
+                title="Normal"
+              >
+                {statusOption === "Normal" ? "" : "N"}
+              </button>
+            </div>
+          )}
       </div>
 
       {/* Room type navigation tabs */}
